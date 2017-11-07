@@ -1,6 +1,12 @@
 # Hyperledger Identity Management
 
 
+##### Dependencies
+
+```
+npm install
+```
+
 ##### Config Server
 
 ```
