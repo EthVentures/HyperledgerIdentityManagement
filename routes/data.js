@@ -9,63 +9,47 @@ var User = require('../models/user');
 var tokenMiddleware = require('../middleware/token');
 var router = express.Router();
 var requestpromise = require('request-promise');
+var shortid = require('shortid');
 
-
-router.get('/test', function(req, res){
-
-
-  var usertest = {
-  "$class": "io.ethventures.thespot.SpotUser",
-  "userId": "tests",
-  "firstName": "string",
-  "lastName": "string",
-  "contactDetails": {
-    "$class": "io.ethventures.thespot.ContactDetails",
-    "email": "string",
-    "mobilePhone": "string",
-    "address": {
-      "$class": "io.ethventures.thespot.Address",
-      "street": "string",
-      "city": "string",
-      "state": "string",
-      "country": "string",
-      "zip": "string",
-      "id": "string"
-    },
-    "id": "string"
-    }
-  };
-
-  /*requestpromise.get({ uri: 'https://api.thespot.exchange:3000/api/io.ethventures.thespot.SpotUser', transform: function(body, res) {
-
-        return body;
-      }
-    }).then(function(data){
-      console.log(data);
-      res.json(JSON.parse(data));
-      //Responds to the request with flight data
-    }, function(err){
-      //Responds to the request with error data
-      console.log("Error");
-    }).catch(function(err){
-      //console.error(err); //Will print any error that was thrown in the previous error handler.
-    });*/
-
-    requestpromise.get({ uri: 'https://api.thespot.exchange:3000/api/io.ethventures.thespot.SpotUser', transform: function(body, res) {
-
-          return body;
-        }
-      }).then(function(data){
-        console.log(data);
-        res.json(JSON.parse(data));
-        //Responds to the request with flight data
-      }, function(err){
-        //Responds to the request with error data
-        console.log("Error");
-      }).catch(function(err){
-        //console.error(err); //Will print any error that was thrown in the previous error handler.
-      });
-
+router.post('/test',tokenMiddleware.verifyToken, function(req, res){
+  //console.log(req.body);
+  var reqdata = req.body;
+  var options = {
+    method: 'POST',
+    uri: 'https://api.thespot.exchange:3000/api/io.ethventures.thespot.ParkingSpot',
+    body: {
+        "$class": "io.ethventures.thespot.ParkingSpot",
+        "parkingSpotID": shortid.generate(),
+        "address": {
+          "$class": "io.ethventures.thespot.Address",
+          "street": reqdata.placedetails.components.route.long,
+          "city": reqdata.placedetails.components.locality.long,
+          "state": reqdata.placedetails.components.administrative_area_level_1.short,
+          "country": reqdata.placedetails.components.country.long,
+          "zip": reqdata.placedetails.components.postal_code.long,
+          "id": shortid.generate()
+        },
+        "coordinates": JSON.stringify({lat: reqdata.placedetails.lat, lng:reqdata.placedetails.lng}),
+        "ratePerHour": parseInt(reqdata.rate),
+        "spotRating": "POOR",
+        "features": {
+          "$class": "io.ethventures.thespot.SpotFeatures",
+          "covered": reqdata.covered,
+          "valet": reqdata.valet,
+          "selfPark": reqdata.self,
+          "inOutAllowed": reqdata.inout,
+          "handicapAccessible": req.handicap,
+          "id": shortid.generate()
+        },
+        "owner": reqdata.user.id
+      },
+      json: true
+    };
+    requestpromise(options).then(function (parsedBody) {
+      res.json({ success: true, spot:options.body });
+    }).catch(function (err) {
+      res.json({ success: false });
+    });
 });
 
 router.post('/find', tokenMiddleware.verifyToken, function(req, res){

@@ -3,7 +3,7 @@ var CONFIG = require('../config.json');
 var TOKEN_SECRET = CONFIG.token.secret;
 
 function verifyToken(request, response, next) {
-  var token = request.body.token || request.query.token || request.headers['x-access-token'];
+  var token = request.body.token || request.query.token || request.headers['Authorization'];
   if (token) {
     jsonwebtoken.verify(token, TOKEN_SECRET, function (error, decoded) {
       if (error) {
@@ -27,7 +27,7 @@ function verifyToken(request, response, next) {
 
 function getTokenPayload(request) {
   var payload = null;
-  var token = request.body.token || request.query.token || request.headers['x-access-token'];
+  var token = request.body.token || request.query.token || request.headers['Authorization'];
   if (token) {
     payload = jsonwebtoken.decode(token, { complete: true }).payload;
   }
