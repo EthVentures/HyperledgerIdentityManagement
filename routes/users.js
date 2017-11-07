@@ -76,7 +76,6 @@ router.post('/register', function createUser(request, response) {
               },
               json: true
             };
-            console.log(options);
             requestpromise(options).then(function (parsedBody) {
               response.json({ success: true, user: { username:user.username, firstName:user.firstName, lastName:user.lastName, id:user.id, email:user.email } });
             }).catch(function (err) {
