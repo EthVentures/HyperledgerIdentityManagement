@@ -11,7 +11,25 @@ var router = express.Router();
 var requestpromise = require('request-promise');
 var shortid = require('shortid');
 
-router.post('/test',tokenMiddleware.verifyToken, function(req, res){
+
+router.get('/allspots',tokenMiddleware.verifyToken, function(req, res){
+
+  var reqdata = req.body;
+  var options = {
+    method: 'GET',
+    uri: 'https://api.thespot.exchange:3000/api/io.ethventures.thespot.ParkingSpot',
+    body: { },
+    json: true
+  };
+
+  requestpromise(options).then(function (parsedBody) {
+    res.json({ success: true, spots:parsedBody });
+  }).catch(function (err) {
+    res.json({ success: false });
+  });
+
+});
+router.post('/spot',tokenMiddleware.verifyToken, function(req, res){
   //console.log(req.body);
   var reqdata = req.body;
   var options = {
