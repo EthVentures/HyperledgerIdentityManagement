@@ -11,7 +11,6 @@ var router = express.Router();
 var requestpromise = require('request-promise');
 var shortid = require('shortid');
 
-
 router.get('/allspots',tokenMiddleware.verifyToken, function(req, res){
 
   var reqdata = req.body;

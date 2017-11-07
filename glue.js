@@ -37,5 +37,5 @@ io.on('connection', function(socket) {
 });
 
 server.listen(process.env.PORT || CONFIG.server.port, function() {
-    console.log('(Hyperledger Identity Management) - Server listening on port: ', CONFIG.server.port);
+    console.log('(Hyperledger Identity Management) Server listening on port: ', CONFIG.server.port);
 });
