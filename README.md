@@ -1,1 +1,1 @@
-# HyperledgerIdentityManagement
+# Hyperledger Identity Management
