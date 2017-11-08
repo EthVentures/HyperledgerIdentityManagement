@@ -39,7 +39,7 @@ router.post('/spot',tokenMiddleware.verifyToken, function(req, res){
         "parkingSpotID": shortid.generate(),
         "address": {
           "$class": "io.ethventures.thespot.Address",
-          "street": reqdata.placedetails.components.route.long,
+          "street": reqdata.placedetails.components.street_number.long + ' ' + reqdata.placedetails.components.route.long,
           "city": reqdata.placedetails.components.locality.long,
           "state": reqdata.placedetails.components.administrative_area_level_1.short,
           "country": reqdata.placedetails.components.country.long,
