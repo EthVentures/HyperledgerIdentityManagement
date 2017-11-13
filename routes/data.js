@@ -11,6 +11,26 @@ var router = express.Router();
 var requestpromise = require('request-promise');
 var shortid = require('shortid');
 
+router.post('/prediction', function(req, res){
+  var token = "";
+  var myJSONObject = {"values":req.body.location};
+  var reqdata = req.body;
+  var options = {
+      url: "https://ibm-watson-ml.mybluemix.net/v3/wml_instances/00195eb4-c665-4384-9e21-57e59ac66f5f/published_models/e971988d-5ca7-4f1e-bf91-5d7050d229a9/deployments/12a00fb6-1acc-4bd7-bd76-b6b5335001a5/online",
+      method: "POST",
+      json: true,
+      headers: {"Content-Type":"application/json","Authorization":"Bearer " + token },
+      body: myJSONObject
+  };
+
+  requestpromise(options).then(function (parsedBody) {
+    res.json({ success: true, spots:parsedBody });
+  }).catch(function (err) {
+    res.json({ success: false });
+  });
+
+});
+
 router.get('/allspots',tokenMiddleware.verifyToken, function(req, res){
 
   var reqdata = req.body;
