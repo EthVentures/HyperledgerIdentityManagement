@@ -11,20 +11,35 @@ var router = express.Router();
 var requestpromise = require('request-promise');
 var shortid = require('shortid');
 
-router.post('/prediction', function(req, res){
-  var token = "";
-  var myJSONObject = {"values":req.body.location};
-  var reqdata = req.body;
-  var options = {
-      url: "https://ibm-watson-ml.mybluemix.net/v3/wml_instances/00195eb4-c665-4384-9e21-57e59ac66f5f/published_models/e971988d-5ca7-4f1e-bf91-5d7050d229a9/deployments/12a00fb6-1acc-4bd7-bd76-b6b5335001a5/online",
-      method: "POST",
-      json: true,
-      headers: {"Content-Type":"application/json","Authorization":"Bearer " + token },
-      body: myJSONObject
-  };
 
-  requestpromise(options).then(function (parsedBody) {
-    res.json({ success: true, spots:parsedBody });
+var optionsauth = {
+    url: 'https://ibm-watson-ml.mybluemix.net/v3/identity/token',
+    auth: {
+        'user': '',
+        'pass': ''
+    }
+};
+
+router.post('/prediction', function(req, res){
+
+  var predbody = {"values":req.body.location};
+
+  requestpromise(optionsauth).then(function (parsedBody) {
+    var token = JSON.parse(parsedBody).token;
+
+    var option = {
+        url: "https://ibm-watson-ml.mybluemix.net/v3/wml_instances/00195eb4-c665-4384-9e21-57e59ac66f5f/published_models/e971988d-5ca7-4f1e-bf91-5d7050d229a9/deployments/12a00fb6-1acc-4bd7-bd76-b6b5335001a5/online",
+        method: "POST", json: true,
+        headers: {"Content-Type":"application/json","Authorization":"Bearer " + token },
+        body: predbody
+    };
+
+    requestpromise(option).then(function (parsedBody) {
+      console.log(parsedBody);
+      res.json({ success: true, prediction:parsedBody });
+    }).catch(function (err) {
+      res.json({ success: false });
+    });
   }).catch(function (err) {
     res.json({ success: false });
   });
